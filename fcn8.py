@@ -14,23 +14,56 @@ def vgg_preprocess(x):
 class Fcn8():
 
       def __init__(self):
-	  self.FILE_PATH = '/home/ariel/DL/tensorflow/tutorials/vgg16.npy'		
-	  self.create()	
+          self.PATH = '/home/ariel/DL/tensorflow/tutorials/'
+          self.FILE_PATH =  os.path.join(self.PATH, 'vgg16.npy')
+          self.data_dict = np.load(self.FILE_PATH, encoding='latin1').item()                      
+          
+          # read from path
+          self.create()       
+      
+      def extract_data(name):
+          nb_filters_out = self.data_dict[name][0].shape[3]
+          nb_rows = self.data_dict[name][0].shape[0]
+          nb_cols = self.data_dict[name][0].shape[1]
+          nb_channels = self.data_dict[name][0].shape[2]
+          weight = self.data_dict[name][0]
+          bias = self.data_dict[name][1]
+          return nb_filters_out, nb_rows, nb_cols, nb_channels, weight, bias
+            
+            
 
-      def ConvBlock(self, layers, filters):
-        model = self.model
-        for i in range(layers):
-            #model.add(ZeroPadding2D((1, 1)))
-            model.add(Convolution2D(filters, 3, 3, activation='relu'))
-        model.add(MaxPooling2D((2, 2), strides=(2, 2)))
+      def ConvBlock(self, name):
+          model = self.model
+          nb_filters_out, nb_rows, nb_cols, nb_channels, weight, bias = extract_data(name)    
+          model.add(Convolution2D(nb_filters_out, # number of output filters
+                                  nb_rows,        # number of rows in the input kernel   
+                                  nb_cols,        # number of cols in the input kernel   
+                                  border_mode='same',                        
+                                  activation='relu', # activation
+                                  weights=[weight, bias])) # initial weights
+
+          model.add(MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='same'))
 
 
       def create(self):
-	  model = self.model = Sequential()
-	  model.add(Lambda(vgg_preprocess, input_shape=(224,224,3), output_shape=(224,224,3)))
+          model = self.model = Sequential()
+          model.add(Lambda(vgg_preprocess, input_shape=(224,224,3), output_shape=(224,224,3)))
 
-	  self.ConvBlock(2, 64)
-          self.ConvBlock(2, 128)
-          self.ConvBlock(3, 256)
-          self.ConvBlock(3, 512)
-          self.ConvBlock(3, 512)
+          self.ConvBlock('conv1_1')  # conv1
+          self.ConvBlock('conv1_2')  # conv1
+        
+          self.ConvBlock('conv2_1') # conv2
+          self.ConvBlock('conv2_2') # conv2
+        
+          self.ConvBlock('conv3_1') # conv3
+          self.ConvBlock('conv3_2') # conv3
+          self.ConvBlock('conv3_3') # conv3
+            
+          self.ConvBlock('conv4_1') # conv4
+          self.ConvBlock('conv4_2') # conv4
+          self.ConvBlock('conv4_3') # conv4
+        
+          self.ConvBlock('conv5_1') # conv5 
+          self.ConvBlock('conv5_2') # conv5 
+          self.ConvBlock('conv5_3') # conv5 
+            

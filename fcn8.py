@@ -5,7 +5,7 @@ from keras.layers.core import Flatten, Dense, Dropout, Lambda
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.pooling import GlobalAveragePooling2D
 
-vgg_mean = np.array([103.939, 116.779, 123.68], dtype=np.float32).reshape((3,1,1)) # BGR
+vgg_mean = np.array([103.939, 116.779, 123.68], dtype=np.float32).reshape((1,1,3)) # BGR
 
 def vgg_preprocess(x):
     x = x - vgg_mean 
@@ -21,7 +21,7 @@ class Fcn8():
           # read from path
           self.create()       
       
-      def extract_data(name):
+      def extract_data(self, name):
           nb_filters_out = self.data_dict[name][0].shape[3]
           nb_rows = self.data_dict[name][0].shape[0]
           nb_cols = self.data_dict[name][0].shape[1]
@@ -34,36 +34,45 @@ class Fcn8():
 
       def ConvBlock(self, name):
           model = self.model
-          nb_filters_out, nb_rows, nb_cols, nb_channels, weight, bias = extract_data(name)    
+          nb_filters_out, nb_rows, nb_cols, nb_channels, weight, bias = self.extract_data(name)    
           model.add(Convolution2D(nb_filters_out, # number of output filters
                                   nb_rows,        # number of rows in the input kernel   
                                   nb_cols,        # number of cols in the input kernel   
                                   border_mode='same',                        
                                   activation='relu', # activation
-                                  weights=[weight, bias])) # initial weights
+                                  weights=[weight, bias])) # initial weights          
 
-          model.add(MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='same'))
-
+      def MaxPool(self):
+          model = self.model	
+	  model.add(MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='same'))
 
       def create(self):
           model = self.model = Sequential()
           model.add(Lambda(vgg_preprocess, input_shape=(224,224,3), output_shape=(224,224,3)))
 
-          self.ConvBlock('conv1_1')  # conv1
-          self.ConvBlock('conv1_2')  # conv1
+          self.ConvBlock('conv1_1') # conv1
+          self.ConvBlock('conv1_2') # conv1
+	  self.MaxPool()
         
           self.ConvBlock('conv2_1') # conv2
           self.ConvBlock('conv2_2') # conv2
-        
+	  self.MaxPool()        
+
           self.ConvBlock('conv3_1') # conv3
           self.ConvBlock('conv3_2') # conv3
           self.ConvBlock('conv3_3') # conv3
-            
+	  self.MaxPool()	          
+  
           self.ConvBlock('conv4_1') # conv4
           self.ConvBlock('conv4_2') # conv4
           self.ConvBlock('conv4_3') # conv4
-        
+          self.MaxPool()
+	
           self.ConvBlock('conv5_1') # conv5 
           self.ConvBlock('conv5_2') # conv5 
           self.ConvBlock('conv5_3') # conv5 
+	  self.MaxPool()
+
+      def predict(self, img, batchSize=1):
+	  return self.model.predict(img, batchSize) 
             

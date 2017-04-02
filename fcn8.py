@@ -63,7 +63,7 @@ class Fcn8():
                                   activation='relu', # activation
                                   weights=[weight, bias])) # initial weights
 
-
+      #def DeConvBlock(self)	
 
       def MaxPool(self):
           model = self.model	
@@ -73,6 +73,7 @@ class Fcn8():
           model = self.model = Sequential()
           model.add(Lambda(vgg_preprocess, input_shape=(224,224,3), output_shape=(224,224,3)))
 
+	  # the VGG8 net - encoder 		
           self.ConvBlock('conv1_1') # conv1
           self.ConvBlock('conv1_2') # conv1
 	  self.MaxPool()
@@ -99,6 +100,10 @@ class Fcn8():
 	  self.FC2Conv('fc6')
 	  self.FC2Conv('fc7')
 	  self.FC2Conv('fc8')
+
+	  # upsampling - decoder
+
+
 
       def predict(self, img, batchSize=1):
 	  return self.model.predict(img, batchSize) 

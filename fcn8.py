@@ -109,4 +109,7 @@ class Fcn8():
 
       def predict(self, img, batchSize=1):
 	  return self.model.predict(img, batchSize) 
+ 
+      def getModel(self):
+          return self.model
             

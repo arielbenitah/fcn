@@ -63,7 +63,9 @@ class Fcn8():
                                   activation='relu', # activation
                                   weights=[weight, bias])) # initial weights
 
-      #def DeConvBlock(self)	
+      #def UpSampleBlock(self, name)	
+
+      #def	
 
       def MaxPool(self):
           model = self.model	

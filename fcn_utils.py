@@ -1,8 +1,7 @@
 import numpy as np
-from matplotlib import pyplot as plt
-from keras.utils.layer_utils import layer_from_config
 from keras.preprocessing import image
 from keras.utils.np_utils import to_categorical
+from matplotlib import pyplot as plt
 
 
 def get_batches(dirname, gen=image.ImageDataGenerator(), shuffle=True, batch_size=4, class_mode='categorical',
@@ -15,11 +14,11 @@ def onehot(x):
 
 def get_data(path, target_size=(224,224)):
     batches = get_batches(path, shuffle=False, batch_size=1, class_mode=None, target_size=target_size)
-    return np.concatenate([batches.next() for i in range(batches.nb_sample)])
+    return np.concatenate([batches.next() for i in range(batches.samples)])
 
 def plot(img):
     plt.imshow(to_plot(img))
-
+    
 def plots(ims, figsize=(12,6), rows=1, interp=False, titles=None):
     if type(ims[0]) is np.ndarray:
         ims = np.array(ims).astype(np.uint8)
@@ -31,6 +30,5 @@ def plots(ims, figsize=(12,6), rows=1, interp=False, titles=None):
         sp.axis('Off')
         if titles is not None:
             sp.set_title(titles[i], fontsize=16)
-        plt.imshow(ims[i], interpolation=None if interp else 'none')
-
+        plt.imshow(ims[i], interpolation=None if interp else 'none')    
 

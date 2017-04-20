@@ -40,7 +40,7 @@ class Vgg16():
             return np.array(preds), idxs, classes
 
 	def create(self):
-	    model = Sequential()
+	    model = self.model = Sequential()
 	    model.add(Lambda(vgg_preprocess, input_shape=(224,224,3), output_shape=(224,224,3)))
 
 	    # Block 1
@@ -80,4 +80,4 @@ class Vgg16():
 
 	    # load weights
 	    fname = 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-	    model.load_weights(get_file(fname, FILE_PATH+fname, cache_subdir='models'))
+	    model.load_weights(get_file(fname, self.FILE_PATH+fname, cache_subdir='models'))

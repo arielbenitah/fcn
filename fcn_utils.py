@@ -2,6 +2,7 @@ import numpy as np
 from keras.preprocessing import image
 from keras.utils.np_utils import to_categorical
 from matplotlib import pyplot as plt
+from sklearn.preprocessing import OneHotEncoder
 
 
 def get_batches(dirname, gen=image.ImageDataGenerator(), shuffle=True, batch_size=4, class_mode='categorical',
@@ -32,3 +33,5 @@ def plots(ims, figsize=(12,6), rows=1, interp=False, titles=None):
             sp.set_title(titles[i], fontsize=16)
         plt.imshow(ims[i], interpolation=None if interp else 'none')    
 
+def onehot(x):
+      return np.array(OneHotEncoder().fit_transform(x.reshape(-1,1)).todense())
